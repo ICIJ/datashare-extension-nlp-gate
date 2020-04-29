@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.icij.datashare</groupId>
+    <artifactId>datashare-nlp-gate</artifactId>
+    <version>6.4.1</version>
+    <packaging>jar</packaging>
+
+    <name>Gate datashare extension</name>
+    <url>https://github.com/ICIJ/datashare-extension-nlp-gate</url>
+    <inceptionYear>2020</inceptionYear>
+    <description>Gate pipeline extension to datashare</description>
+
+    <organization>
+        <name>ICIJ</name>
+        <url>https://www.icij.org/</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Bruno Thomas</name>
+            <email>bthomas@icij.org</email>
+            <organization>ICIJ</organization>
+        </developer>
+        <developer>
+            <name>Julien Martin</name>
+            <id>julm</id>
+            <email>julien.pierre.martin@gmail.com</email>
+            <organization>ICIJ</organization>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/ICIJ/datashare-extension-nlp-gate</url>
+        <connection>scm:git:https://github.com/ICIJ/datashare-extension-nlp-gate.git</connection>
+        <developerConnection>scm:git:https://github.com/ICIJ/datashare-extension-nlp-gate.git</developerConnection>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>GNU Affero General Public License v3.0</name>
+            <url>https://www.gnu.org/licenses/agpl-3.0.en.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <jackson.version>2.10.2</jackson.version>
+        <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+        <entity-extractor.version>1.1</entity-extractor.version>
+        <entity-extractor-lib.version>1.1</entity-extractor-lib.version>
+        <guice.version>4.1.0</guice.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>datashare-api</artifactId>
+            <version>6.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>es.upm.oeg</groupId>
+            <artifactId>entity-extractor</artifactId>
+            <version>${entity-extractor.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>es.upm.oeg</groupId>
+            <artifactId>entity-extractor-lib</artifactId>
+            <version>${entity-extractor-lib.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice.version}</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easytesting</groupId>
+            <artifactId>fest-assert</artifactId>
+            <version>1.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>2.0.2-beta</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <relocations>
+                                <!-- gate uses lucene -->
+                                <!-- so to avoid collisions with elasticsearch/lucene-->
+                                <relocation>
+                                    <pattern>org.apache.lucene</pattern>
+                                    <shadedPattern>org.apache.lucene-gatenlp</shadedPattern>
+                                </relocation>
+                                <!-- gate uses tika -->
+                                <!-- so to avoid collisions with tika and tika-deps from extract-->
+                                <relocation>
+                                    <pattern>org.apache.tika</pattern>
+                                    <shadedPattern>org.apache.tika-gatenlp</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.pdfbox</pattern>
+                                    <shadedPattern>org.apache.pdfbox-gatenlp</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.fontbox</pattern>
+                                    <shadedPattern>org.apache.fontbox-gatenlp</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.james</pattern>
+                                    <shadedPattern>org.apache.james-gatenlp</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <executions>
+                    <execution>
+                        <id>install-entity-extractor</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>es.upm.oeg</groupId>
+                            <artifactId>entity-extractor</artifactId>
+                            <version>${entity-extractor.version}</version>
+                            <packaging>jar</packaging>
+                            <file>${project.basedir}/lib/entity-extractor.jar</file>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-entity-extractor-lib</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>es.upm.oeg</groupId>
+                            <artifactId>entity-extractor-lib</artifactId>
+                            <version>${entity-extractor-lib.version}</version>
+                            <packaging>jar</packaging>
+                            <file>${project.basedir}/lib/entity-extractor-lib.jar</file>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
