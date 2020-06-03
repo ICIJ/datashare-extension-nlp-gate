@@ -6,7 +6,7 @@
 
     <groupId>org.icij.datashare</groupId>
     <artifactId>datashare-nlp-gate</artifactId>
-    <version>6.4.1</version>
+    <version>7.0.0</version>
     <packaging>jar</packaging>
 
     <name>Gate datashare extension</name>
