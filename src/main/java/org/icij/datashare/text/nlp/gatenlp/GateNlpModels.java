@@ -4,7 +4,6 @@ import org.icij.datashare.text.Language;
 import org.icij.datashare.text.nlp.AbstractModels;
 import org.icij.datashare.text.nlp.Pipeline;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 public class GateNlpModels extends AbstractModels<String> {
@@ -18,7 +17,7 @@ public class GateNlpModels extends AbstractModels<String> {
     }
 
     @Override
-    protected String loadModelFile(Language language, ClassLoader loader) throws IOException { return getVersion();}
+    protected String loadModelFile(Language language) { return getVersion();}
 
     @Override
     protected String getVersion() { return "1.0-oeg";}

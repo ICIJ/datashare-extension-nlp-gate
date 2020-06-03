@@ -80,12 +80,12 @@ public final class GatenlpPipeline extends AbstractPipeline {
     }
 
     @Override
-    public Annotations process(String content, String docId, Language language) {
-        Annotations annotations = new Annotations(docId, getType(), language);
+    public List<NamedEntity> process(Document document) {
+        Annotations annotations = new Annotations(document.getId(), getType(), document.getLanguage());
         try {
             // Gate annotated document
-            String gateDocName = String.join(".", asList(Document.HASHER.hash(content), "txt"));
-            GATENLPDocument gateDoc = new GATENLPDocument(gateDocName, content);
+            String gateDocName = String.join(".", asList(Document.HASHER.hash(document.getContent()), "txt"));
+            GATENLPDocument gateDoc = new GATENLPDocument(gateDocName, document.getContent());
 
             // Tokenize input
             // NER input
@@ -120,7 +120,7 @@ public final class GatenlpPipeline extends AbstractPipeline {
                             }
                         });
             }
-            return annotations;
+            return NamedEntity.allFrom(document.getContent(), annotations);
 
         } catch (ResourceInstantiationException e) {
             LOGGER.error("Failed to createList Gate Document", e);
