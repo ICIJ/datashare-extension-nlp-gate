@@ -63,7 +63,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>datashare-api</artifactId>
-            <version>7.0.3</version>
+            <version>7.30.0</version>
         </dependency>
         <dependency>
             <groupId>es.upm.oeg</groupId>
